@@ -1,0 +1,179 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email.lower() in [
+          'jmichrepublic@gmail.com',
+          'admin@fundecho.org',
+          'admin@fundora.org'
+        ] ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'superAdmin'])
+      );
+    }
+
+    // Health check & connection validation endpoint
+    match /test/{document} {
+      allow read, write: if true;
+    }
+
+    // 1. Users Collection
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId) || isAdmin();
+      allow update: if (isOwner(userId) && !incoming().diff(existing()).affectedKeys().hasAny(['role', 'accountStatus'])) || isAdmin();
+      allow delete: if isAdmin();
+
+      // Legacy subcollection for saved opportunities
+      match /savedOpportunities/{oppId} {
+        allow read, write: if isOwner(userId) || isAdmin();
+      }
+    }
+
+    // 2. User Profiles Collection
+    match /userProfiles/{userId} {
+      allow read, write: if isOwner(userId) || isAdmin();
+    }
+
+    // 3. Admin Profiles Collection
+    match /adminProfiles/{userId} {
+      allow read, write: if isAdmin();
+    }
+
+    // 4. Funding Opportunities (Grants & Scholarships)
+    match /opportunities/{opportunityId} {
+      allow read: if true;
+      allow create: if isAdmin() || (request.resource.data.isSampleData == true);
+      allow update, delete: if isAdmin();
+    }
+
+    match /funding_opportunities/{opportunityId} {
+      allow read: if true;
+      allow create: if isAdmin() || (request.resource.data.isSampleData == true);
+      allow update, delete: if isAdmin();
+    }
+
+    // Step 2 Crawler Pipeline Collections
+    match /drafts/{draftId} {
+      allow read, write: if isAdmin();
+    }
+
+    match /sources/{sourceId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /crawlJobs/{jobId} {
+      allow read, write: if isAdmin();
+    }
+
+    match /crawlResults/{resultId} {
+      allow read, write: if isAdmin();
+    }
+
+    match /verificationQueue/{queueId} {
+      allow read, write: if isAdmin();
+    }
+
+    match /duplicates/{duplicateId} {
+      allow read, write: if isAdmin();
+    }
+
+    match /adminLogs/{logId} {
+      allow read: if isAdmin();
+      allow create: if isAdmin();
+      allow update, delete: if false; // Immutable audit trail
+    }
+
+    // 5. Saved Opportunities Collection (User Bookmarks)
+    match /saved_opportunities/{savedId} {
+      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isSignedIn() && (request.resource.data.userId == request.auth.uid || isAdmin());
+      allow update, delete: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+    }
+
+    // 6. Application Workspace & Tracked Applications
+    match /applications/{applicationId} {
+      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isSignedIn() && (request.resource.data.userId == request.auth.uid || isAdmin());
+      allow update, delete: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+    }
+
+    // 7. In-App Notifications
+    match /notifications/{notificationId} {
+      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isSignedIn();
+      allow update, delete: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+    }
+
+    // 8. Reminder Deduplication Records
+    match /reminder_records/{recordId} {
+      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isSignedIn() && (request.resource.data.userId == request.auth.uid || isAdmin());
+      allow update, delete: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+    }
+
+    // 9. Categories Directory
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // 10. Partner Affiliate Offers
+    match /affiliate_offers/{offerId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // 11. Credit Wallets & Transactions
+    match /creditWallets/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow write: if isOwner(userId) || isAdmin();
+    }
+
+    match /creditTransactions/{txId} {
+      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isSignedIn() && (request.resource.data.userId == request.auth.uid || isAdmin());
+      allow update, delete: if isAdmin();
+    }
+
+    // 12. Subscriptions & Subscription Plans
+    match /subscriptions/{subId} {
+      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow write: if isSignedIn() && (request.resource.data.userId == request.auth.uid || isAdmin());
+    }
+
+    match /subscriptionPlans/{planId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // 13. FCM Push Notification Tokens
+    match /fcmTokens/{tokenId} {
+      allow read, write: if isSignedIn() && (request.resource.data.userId == request.auth.uid || resource.data.userId == request.auth.uid || isAdmin());
+    }
+
+    // Global Catch-all Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

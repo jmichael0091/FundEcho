@@ -1,0 +1,114 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <!-- Top Green-to-Blue Ribbon Gradient -->
+    <linearGradient id="favTopGrad" x1="0%" y1="0%" x2="100%" y2="50%">
+      <stop offset="0%" stop-color="#4ADE80" />
+      <stop offset="25%" stop-color="#22C55E" />
+      <stop offset="55%" stop-color="#06B6D4" />
+      <stop offset="80%" stop-color="#0284C7" />
+      <stop offset="100%" stop-color="#1D4ED8" />
+    </linearGradient>
+
+    <!-- Middle Arm Blue Gradient -->
+    <linearGradient id="favMidGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00A3FF" />
+      <stop offset="50%" stop-color="#0077F7" />
+      <stop offset="100%" stop-color="#003EAA" />
+    </linearGradient>
+
+    <!-- Vertical Stem Blue Gradient -->
+    <linearGradient id="favStemGrad" x1="10%" y1="10%" x2="90%" y2="90%">
+      <stop offset="0%" stop-color="#00B4D8" />
+      <stop offset="30%" stop-color="#0077E6" />
+      <stop offset="70%" stop-color="#0050C8" />
+      <stop offset="100%" stop-color="#002D8C" />
+    </linearGradient>
+
+    <!-- Globe Ocean Radial Gradient -->
+    <radialGradient id="favGlobeOcean" cx="35%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#38BDF8" />
+      <stop offset="30%" stop-color="#0284C7" />
+      <stop offset="70%" stop-color="#034596" />
+      <stop offset="100%" stop-color="#01245E" />
+    </radialGradient>
+
+    <radialGradient id="favGlobeShine" cx="35%" cy="30%" r="50%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.8" />
+      <stop offset="50%" stop-color="#FFFFFF" stop-opacity="0.1" />
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- Echo Waves Gradient -->
+    <linearGradient id="favEchoGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#A3E635" />
+      <stop offset="50%" stop-color="#4ADE80" />
+      <stop offset="100%" stop-color="#16A34A" />
+    </linearGradient>
+  </defs>
+
+  <g id="fundEchoFavicon">
+    <!-- 1. TOP CURVED "F" RIBBON -->
+    <path
+      d="M 80,240 
+         C 80,140 140,50 240,48 
+         C 330,46 410,50 445,55 
+         C 455,57 458,68 450,75 
+         C 400,120 330,138 230,142 
+         C 160,144 110,180 80,240 Z"
+      fill="url(#favTopGrad)"
+    />
+
+    <!-- 2. MIDDLE HORIZONTAL "F" BAR -->
+    <path
+      d="M 125,230 
+         C 140,185 190,172 260,172 
+         L 400,172 
+         C 416,172 426,186 422,202 
+         C 418,218 406,242 388,245 
+         C 310,246 220,248 150,285 
+         C 138,292 122,275 125,230 Z"
+      fill="url(#favMidGrad)"
+    />
+
+    <!-- 3. MAIN VERTICAL / SPIRAL STEM -->
+    <path
+      d="M 80,230 
+         C 80,310 105,400 170,455 
+         C 200,480 235,475 232,458 
+         C 225,430 190,400 178,355 
+         C 160,290 180,240 220,200 
+         C 160,200 105,205 80,230 Z"
+      fill="url(#favStemGrad)"
+    />
+
+    <!-- 4. 3D GLOSS EARTH GLOBE -->
+    <g transform="translate(244, 362)">
+      <circle cx="0" cy="0" r="91" fill="url(#favGlobeOcean)" />
+      <!-- Continents -->
+      <path
+        d="M -15,-65 C -8,-68 12,-70 18,-60 C 22,-52 14,-42 22,-36 C 28,-30 40,-32 44,-20 C 48,-8 38,10 40,25 C 42,42 22,65 14,68 C 5,72 -6,55 -10,40 C -15,22 -30,8 -28,-10 C -26,-28 -22,-38 -15,-48 C -12,-55 -22,-62 -15,-65 Z"
+        fill="#E0F2FE"
+      />
+      <path d="M 28,32 C 34,30 36,45 32,52 C 28,58 24,45 28,32 Z" fill="#BAE6FD" />
+      <path d="M -75,-35 C -65,-50 -50,-55 -40,-45 C -32,-38 -45,-20 -40,-5 C -35,10 -48,32 -60,45 C -70,55 -80,40 -82,25 C -85,10 -82,-20 -75,-35 Z" fill="#E0F2FE" />
+      <circle cx="0" cy="0" r="91" fill="url(#favGlobeShine)" />
+      <circle cx="0" cy="0" r="90" fill="none" stroke="#38BDF8" stroke-width="2" opacity="0.7" />
+    </g>
+
+    <!-- 5. BROADCAST / ECHO WAVES -->
+    <path
+      d="M 315,268 C 355,295 378,340 378,390 C 378,435 358,470 322,492"
+      fill="none"
+      stroke="url(#favEchoGrad)"
+      stroke-width="24"
+      stroke-linecap="round"
+    />
+    <path
+      d="M 370,265 C 418,298 446,350 446,408 C 446,458 420,498 378,520"
+      fill="none"
+      stroke="url(#favEchoGrad)"
+      stroke-width="24"
+      stroke-linecap="round"
+    />
+  </g>
+</svg>

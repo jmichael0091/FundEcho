@@ -1,0 +1,26 @@
+# FundEcho Robots Configuration (2026)
+User-agent: *
+Allow: /
+Allow: /opportunities/
+Allow: /categories/
+Allow: /country/
+Allow: /funding-types/
+Allow: /funders/
+Allow: /calendar
+Allow: /directory
+Allow: /about
+Allow: /contact
+
+# Private User Application and Management Paths
+Disallow: /dashboard
+Disallow: /saved
+Disallow: /recommended
+Disallow: /profile
+Disallow: /settings
+Disallow: /admin
+Disallow: /application-workspace
+Disallow: /login
+Disallow: /signup
+Disallow: /forgot-password
+
+Sitemap: https://fundecho.org/sitemap.xml

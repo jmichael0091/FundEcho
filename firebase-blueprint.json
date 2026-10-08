@@ -1,0 +1,390 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Authenticated user profile connected to Firebase Authentication",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Firebase Auth UID" },
+        "fullName": { "type": "string", "description": "User's full name" },
+        "email": { "type": "string", "description": "User's email address" },
+        "country": { "type": "string", "description": "User's primary country or region" },
+        "interests": { "type": "array", "description": "Category slugs of interest" },
+        "organizationType": { "type": "string", "description": "Type of applicant/organization" },
+        "profileCompleted": { "type": "boolean", "description": "Whether the user profile has been completed" },
+        "role": { "type": "string", "description": "Platform authorization role", "enum": ["user", "admin", "superAdmin"] },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Last update timestamp" }
+      },
+      "required": ["uid", "fullName", "email"]
+    },
+    "FundingOpportunity": {
+      "title": "FundingOpportunity",
+      "description": "Funding opportunity record in FundEcho directory populated by global crawler, AI extraction, and admin curation",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "description": "Title of the funding opportunity" },
+        "provider": { "type": "string", "description": "Funding provider or institution name" },
+        "opportunityType": { "type": "string", "description": "Grant, Scholarship, Fellowship, Funding, Competition, Accelerator, Award, etc." },
+        "category": { "type": "string", "description": "Primary industry/discipline category" },
+        "subcategory": { "type": "string", "description": "Specific niche or sub-discipline" },
+        "description": { "type": "string", "description": "Comprehensive program description" },
+        "fundingAmount": { "type": "string", "description": "Funding value or structured award amount" },
+        "currency": { "type": "string", "description": "Three-letter currency code (e.g. USD, EUR, GBP)" },
+        "eligibleCountries": { "type": "array", "description": "List of specific eligible countries" },
+        "eligibleRegions": { "type": "array", "description": "List of eligible macro-regions or continents" },
+        "applicantType": { "type": "array", "description": "Eligible applicant types (Individual, Non-Profit, Startup, etc.)" },
+        "eligibilityRequirements": { "type": "array", "description": "Detailed eligibility criteria and prerequisites" },
+        "ageRequirements": { "type": "object", "description": "Age restrictions where applicable" },
+        "genderRequirements": { "type": "object", "description": "Gender restrictions where applicable" },
+        "industryField": { "type": "array", "description": "Target industries and scientific/artistic fields" },
+        "deadline": { "type": "string", "description": "Closing deadline date (YYYY-MM-DD or Rolling)" },
+        "applicationUrl": { "type": "string", "description": "Official application portal URL" },
+        "officialSourceUrl": { "type": "string", "description": "Primary institution or announcement source URL" },
+        "requiredDocuments": { "type": "array", "description": "List of required application attachments and documents" },
+        "applicationProcess": { "type": "array", "description": "Step-by-step application instructions and stages" },
+        "status": {
+          "type": "string",
+          "enum": ["Draft", "Pending Review", "Published", "Expired", "Rejected"],
+          "description": "Lifecycle and curation status"
+        },
+        "dateDiscovered": { "type": "string", "description": "Date when discovered by web crawler or curator (YYYY-MM-DD)" },
+        "lastVerified": { "type": "string", "description": "Date of latest verification audit" },
+        "sourceName": { "type": "string", "description": "Originating source or crawler feed name" },
+        "aiConfidence": { "type": "number", "description": "AI extraction confidence percentage (0-100)" },
+        "adminNotes": { "type": "string", "description": "Internal editorial review and verification notes" },
+        "tags": { "type": "array", "description": "Searchable feature and topic tags" },
+        "featured": { "type": "boolean", "description": "Whether the opportunity is promoted or featured" },
+        "verified": { "type": "boolean", "description": "Whether the opportunity source is human-verified" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Last update timestamp" }
+      },
+      "required": ["title", "provider", "opportunityType", "category", "description", "status", "deadline"]
+    },
+    "SavedOpportunity": {
+      "title": "SavedOpportunity",
+      "description": "User bookmarked or saved funding opportunity",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "UID of the owner user" },
+        "opportunityId": { "type": "string", "description": "Document ID of the saved funding opportunity" },
+        "notes": { "type": "string", "description": "Optional private notes from user" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Timestamp when saved" }
+      },
+      "required": ["userId", "opportunityId"]
+    },
+    "Application": {
+      "title": "Application",
+      "description": "User funding application tracking record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique application document ID" },
+        "userId": { "type": "string", "description": "Applicant Firebase Auth UID" },
+        "opportunityId": { "type": "string", "description": "Firestore opportunity document ID" },
+        "opportunityTitle": { "type": "string", "description": "Opportunity title" },
+        "provider": { "type": "string", "description": "Funding provider or institution" },
+        "status": {
+          "type": "string",
+          "description": "Lifecycle status of application",
+          "enum": ["Planning", "In Progress", "Submitted", "Under Review", "Approved", "Rejected", "Withdrawn"]
+        },
+        "notes": { "type": "string", "description": "Private applicant notes" },
+        "deadline": { "type": "string", "description": "Opportunity deadline date string" },
+        "startedAt": { "type": "string", "format": "date-time", "description": "When the application tracking started" },
+        "submittedAt": { "type": "string", "format": "date-time", "description": "When the application was submitted" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "When the application was last updated" },
+        "progress": { "type": "number", "description": "Preparation progress readiness percentage (0-100)" },
+        "requirements": {
+          "type": "array",
+          "description": "Interactive checklist of application requirements and readiness milestones",
+          "items": { "type": "object" }
+        },
+        "documents": {
+          "type": "array",
+          "description": "Required and uploaded application documents with upload metadata and status",
+          "items": { "type": "object" }
+        },
+        "responses": {
+          "type": "array",
+          "description": "Structured questions and answers for the funding application proposal",
+          "items": { "type": "object" }
+        }
+      },
+      "required": ["userId", "opportunityId", "opportunityTitle", "provider", "status", "startedAt", "updatedAt"]
+    },
+    "Notification": {
+      "title": "Notification",
+      "description": "In-app and system notification for deadline alerts, application changes, and opportunity updates",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique notification document ID" },
+        "userId": { "type": "string", "description": "Target user Firebase Auth UID" },
+        "type": { "type": "string", "description": "Type of notification", "enum": ["Deadline Reminder", "Application Update", "Opportunity Update", "System Notification"] },
+        "title": { "type": "string", "description": "Notification subject heading" },
+        "message": { "type": "string", "description": "Notification body content" },
+        "opportunityId": { "type": "string", "description": "Associated funding opportunity document ID" },
+        "applicationId": { "type": "string", "description": "Associated application document ID" },
+        "read": { "type": "boolean", "description": "Whether marked as read by user" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp" },
+        "scheduledFor": { "type": "string", "format": "date-time", "description": "Target delivery timestamp" },
+        "deliveredAt": { "type": "string", "format": "date-time", "description": "Actual delivery timestamp" }
+      },
+      "required": ["userId", "type", "title", "message", "read", "createdAt"]
+    },
+    "ReminderRecord": {
+      "title": "ReminderRecord",
+      "description": "Deterministic deduplication record preventing duplicate deadline reminders",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Deterministic key: userId + applicationId + reminderType + deadline" },
+        "userId": { "type": "string", "description": "Target user UID" },
+        "applicationId": { "type": "string", "description": "Associated application ID" },
+        "opportunityId": { "type": "string", "description": "Associated opportunity ID" },
+        "reminderInterval": { "type": "string", "description": "Reminder interval code (14d, 7d, 3d, 1d, 0d)" },
+        "deadline": { "type": "string", "description": "Deadline string" },
+        "generatedAt": { "type": "string", "format": "date-time", "description": "Generation timestamp" }
+      },
+      "required": ["id", "userId", "applicationId", "reminderInterval", "deadline", "generatedAt"]
+    },
+    "FCMToken": {
+      "title": "FCMToken",
+      "description": "Firebase Cloud Messaging device token registration",
+      "type": "object",
+      "properties": {
+        "token": { "type": "string", "description": "FCM registration token" },
+        "userId": { "type": "string", "description": "Owner UID" },
+        "platform": { "type": "string", "description": "Web or mobile device identifier" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Token registration timestamp" },
+        "lastActive": { "type": "string", "format": "date-time", "description": "Last active timestamp" }
+      },
+      "required": ["token", "userId", "createdAt"]
+    },
+    "Category": {
+      "title": "Category",
+      "description": "Funding directory category metadata",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Category display name" },
+        "slug": { "type": "string", "description": "URL-safe slug identifier" },
+        "description": { "type": "string", "description": "Category overview" },
+        "icon": { "type": "string", "description": "Lucide icon identifier" },
+        "count": { "type": "integer", "description": "Estimated opportunities count" }
+      },
+      "required": ["name", "slug"]
+    },
+    "AffiliateOffer": {
+      "title": "AffiliateOffer",
+      "description": "Partner affiliate promotion offer",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "description": "Offer headline" },
+        "partnerName": { "type": "string", "description": "Partner brand name" },
+        "description": { "type": "string", "description": "Offer description" },
+        "category": { "type": "string", "description": "Matched sector or category" },
+        "affiliateUrl": { "type": "string", "description": "Monetized affiliate URL" },
+        "status": { "type": "string", "description": "Offer status", "enum": ["active", "inactive", "paused"] }
+      },
+      "required": ["title", "partnerName", "affiliateUrl", "status"]
+    },
+    "OpportunityDraft": {
+      "title": "OpportunityDraft",
+      "description": "Crawled and extracted opportunity awaiting curation and approval",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Draft unique identifier" },
+        "title": { "type": "string", "description": "Extracted opportunity title" },
+        "provider": { "type": "string", "description": "Organization offering the opportunity" },
+        "status": { "type": "string", "enum": ["draft", "pending_review", "approved", "rejected"], "description": "Review status" },
+        "sourceId": { "type": "string", "description": "ID of monitored crawler source" },
+        "sourceName": { "type": "string", "description": "Name of source portal" },
+        "crawlJobId": { "type": "string", "description": "Originating crawler execution task ID" },
+        "aiConfidence": { "type": "number", "description": "AI extraction confidence percentage (0-100)" },
+        "deduplicationHash": { "type": "string", "description": "Normalized title+provider+deadline hash" },
+        "isDuplicateSuspected": { "type": "boolean", "description": "Whether duplicate candidate was flagged" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Last update timestamp" }
+      },
+      "required": ["id", "title", "provider", "status", "sourceId", "createdAt"]
+    },
+    "CrawlerSource": {
+      "title": "CrawlerSource",
+      "description": "Monitored website, portal, or institutional feed in FundEcho Source Registry",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Source unique identifier" },
+        "sourceName": { "type": "string", "description": "Organization or website display name" },
+        "name": { "type": "string", "description": "Display name alias" },
+        "organization": { "type": "string", "description": "Legal entity or organization name" },
+        "websiteUrl": { "type": "string", "description": "Target root or listings portal URL" },
+        "baseUrl": { "type": "string", "description": "Base URL alias" },
+        "domain": { "type": "string", "description": "Normalized web domain" },
+        "countryRegion": { "type": "string", "description": "Geographic scope or headquarters country" },
+        "region": { "type": "string", "description": "Region alias" },
+        "sourceType": { "type": "string", "description": "Category of institution: Government, Foundation, NGO, University, Corporation, Accelerator, etc." },
+        "opportunityCategories": { "type": "array", "description": "Opportunity category slugs monitored at this source" },
+        "trustLevel": { "type": "string", "description": "Verification level: High, Medium, Low, Verified" },
+        "status": { "type": "string", "enum": ["Active", "Paused", "active", "paused", "error", "deprecated"], "description": "Monitoring status (Active or Paused)" },
+        "crawlFrequency": { "type": "string", "description": "Frequency string: e.g. Every 6 Hours, Every 12 Hours, Daily (24h), Weekly" },
+        "crawlFrequencyHours": { "type": "integer", "description": "Interval in hours between automated crawls" },
+        "lastCrawled": { "type": "string", "description": "ISO timestamp or date string of last crawl execution" },
+        "nextScheduledCrawl": { "type": "string", "description": "ISO timestamp or date string of next scheduled crawl" },
+        "notes": { "type": "string", "description": "Internal administrator and crawler curator notes" },
+        "targetUrls": { "type": "array", "description": "Listing URLs and feed endpoints" },
+        "reliabilityScore": { "type": "number", "description": "Historic extraction reliability (0-100)" },
+        "totalOpportunitiesDiscovered": { "type": "integer", "description": "Count of opportunities found" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Registration timestamp" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Last update timestamp" }
+      },
+      "required": ["id", "sourceName", "websiteUrl", "sourceType", "status", "createdAt"]
+    },
+    "CrawlJob": {
+      "title": "CrawlJob",
+      "description": "Crawler task execution record and status",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Crawl job task ID" },
+        "sourceId": { "type": "string", "description": "Associated source ID" },
+        "sourceName": { "type": "string", "description": "Associated source name" },
+        "status": { "type": "string", "enum": ["queued", "running", "completed", "failed", "cancelled"], "description": "Job execution status" },
+        "triggeredBy": { "type": "string", "enum": ["scheduler", "manual_admin", "webhook", "retry"], "description": "Trigger origin" },
+        "pagesScrapedCount": { "type": "integer", "description": "Pages processed during run" },
+        "opportunitiesFoundCount": { "type": "integer", "description": "Candidate opportunities discovered" },
+        "draftsCreatedCount": { "type": "integer", "description": "Draft records saved to database" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Job queued timestamp" }
+      },
+      "required": ["id", "sourceId", "status", "createdAt"]
+    },
+    "CrawlResult": {
+      "title": "CrawlResult",
+      "description": "Raw web page extraction and AI parsing capture in FundEcho Discovery Engine",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique result ID" },
+        "crawlJobId": { "type": "string", "description": "Associated crawl task ID" },
+        "sourceId": { "type": "string", "description": "Source ID" },
+        "sourceName": { "type": "string", "description": "Source portal or institution name" },
+        "sourceUrl": { "type": "string", "description": "Scraped opportunity page URL" },
+        "url": { "type": "string", "description": "URL alias" },
+        "pageTitle": { "type": "string", "description": "Discovered page or link title" },
+        "opportunityType": { "type": "string", "description": "Identified type: Grant, Scholarship, Fellowship, Funding, Competition, Accelerator, Award" },
+        "discoveryDate": { "type": "string", "description": "Date string when URL was discovered (YYYY-MM-DD)" },
+        "discoveredAt": { "type": "string", "format": "date-time", "description": "Timestamp when URL was discovered" },
+        "rawContentHash": { "type": "string", "description": "SHA-256 hash of scraped HTML or text" },
+        "aiConfidence": { "type": "number", "description": "AI extraction confidence percentage (0-100)" },
+        "confidenceScore": { "type": "number", "description": "Heuristic match score (0-100)" },
+        "status": { "type": "string", "enum": ["unprocessed", "drafted", "discarded", "duplicate_skipped", "failed"], "description": "Processing status" },
+        "processingError": { "type": "string", "description": "Error message if request failed" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Capture timestamp" }
+      },
+      "required": ["id", "crawlJobId", "sourceId", "sourceUrl", "status", "createdAt"]
+    },
+    "VerificationQueueItem": {
+      "title": "VerificationQueueItem",
+      "description": "Admin review and curation queue entry",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Queue item unique ID" },
+        "targetId": { "type": "string", "description": "Referenced draft or opportunity ID" },
+        "targetTitle": { "type": "string", "description": "Opportunity title" },
+        "priority": { "type": "string", "enum": ["urgent", "high", "medium", "low"], "description": "Review priority" },
+        "status": { "type": "string", "enum": ["pending", "in_review", "approved", "rejected", "escalated"], "description": "Queue status" },
+        "aiConfidence": { "type": "number", "description": "AI confidence score" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Queue entry timestamp" }
+      },
+      "required": ["id", "targetId", "targetTitle", "priority", "status", "createdAt"]
+    },
+    "DuplicateRecord": {
+      "title": "DuplicateRecord",
+      "description": "Detected duplicate opportunity tracking record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Duplicate record unique ID" },
+        "deduplicationHash": { "type": "string", "description": "Normalized title+provider+deadline hash" },
+        "canonicalOpportunityId": { "type": "string", "description": "Master opportunity ID" },
+        "duplicateCandidateId": { "type": "string", "description": "Duplicate opportunity ID" },
+        "similarityScore": { "type": "number", "description": "Match score percentage (0-100)" },
+        "status": { "type": "string", "enum": ["detected", "merged", "dismissed", "pending_admin_decision"], "description": "Resolution status" },
+        "detectedAt": { "type": "string", "format": "date-time", "description": "Detection timestamp" }
+      },
+      "required": ["id", "canonicalOpportunityId", "duplicateCandidateId", "status", "detectedAt"]
+    },
+    "AdminLog": {
+      "title": "AdminLog",
+      "description": "Immutable audit record of administrative and curator actions",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique log entry ID" },
+        "adminId": { "type": "string", "description": "Admin UID" },
+        "adminEmail": { "type": "string", "description": "Admin email address" },
+        "actionType": { "type": "string", "description": "Type of administrative operation" },
+        "targetCollection": { "type": "string", "description": "Affected collection" },
+        "targetId": { "type": "string", "description": "Affected document ID" },
+        "details": { "type": "string", "description": "Detailed explanation of action" },
+        "timestamp": { "type": "string", "format": "date-time", "description": "Action timestamp" }
+      },
+      "required": ["id", "adminId", "adminEmail", "actionType", "targetCollection", "targetId", "details", "timestamp"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profiles connected to Firebase Auth UIDs"
+    },
+    "/opportunities/{opportunityId}": {
+      "schema": "FundingOpportunity",
+      "description": "Published institutional funding opportunities, grants, and scholarships (Step 2 Core Catalog)"
+    },
+    "/funding_opportunities/{opportunityId}": {
+      "schema": "FundingOpportunity",
+      "description": "Published institutional funding opportunities (legacy alias)"
+    },
+    "/drafts/{draftId}": {
+      "schema": "OpportunityDraft",
+      "description": "Opportunities discovered by crawler awaiting review"
+    },
+    "/sources/{sourceId}": {
+      "schema": "CrawlerSource",
+      "description": "Websites and organizations monitored by FundEcho"
+    },
+    "/crawlJobs/{jobId}": {
+      "schema": "CrawlJob",
+      "description": "Crawler execution tasks, schedules, and statuses"
+    },
+    "/crawlResults/{resultId}": {
+      "schema": "CrawlResult",
+      "description": "Raw discovery and extraction results from crawler"
+    },
+    "/verificationQueue/{queueId}": {
+      "schema": "VerificationQueueItem",
+      "description": "Admin review and verification records"
+    },
+    "/duplicates/{duplicateId}": {
+      "schema": "DuplicateRecord",
+      "description": "Detected duplicate opportunities and resolution tracking"
+    },
+    "/adminLogs/{logId}": {
+      "schema": "AdminLog",
+      "description": "Auditable log of important admin actions"
+    },
+    "/saved_opportunities/{savedOpportunityId}": {
+      "schema": "SavedOpportunity",
+      "description": "User bookmarked and saved funding opportunities"
+    },
+    "/applications/{applicationId}": {
+      "schema": "Application",
+      "description": "User multi-step application workspace"
+    },
+    "/notifications/{notificationId}": {
+      "schema": "Notification",
+      "description": "User in-app notifications and alerts"
+    },
+    "/categories/{categoryId}": {
+      "schema": "Category",
+      "description": "Catalog classifications and categories"
+    },
+    "/affiliate_offers/{offerId}": {
+      "schema": "AffiliateOffer",
+      "description": "Affiliate partner deals and grant preparation tools"
+    }
+  }
+}

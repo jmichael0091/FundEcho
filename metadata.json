@@ -1,0 +1,6 @@
+{
+  "name": "FUNDORA",
+  "description": "The Global Funding & Opportunity Network. Discover grants, scholarships, fellowships, and verified institutional funding worldwide.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

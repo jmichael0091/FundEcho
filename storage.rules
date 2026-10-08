@@ -1,0 +1,90 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && (
+        request.auth.token.role == 'admin' ||
+        request.auth.token.role == 'superAdmin'
+      );
+    }
+
+    function isImage() {
+      return request.resource.contentType.matches('image/.*');
+    }
+
+    function isDocument() {
+      return request.resource.contentType.matches('application/pdf') ||
+             request.resource.contentType.matches('application/msword') ||
+             request.resource.contentType.matches('application/vnd.openxmlformats-officedocument.*') ||
+             request.resource.contentType.matches('text/.*');
+    }
+
+    function isValidSize(maxBytes) {
+      return request.resource.size <= maxBytes;
+    }
+
+    // =========================================================================
+    // USER PROFILE IMAGES (/users/{userId}/avatar/{fileName})
+    // Max 5MB, image types only
+    // =========================================================================
+    match /users/{userId}/avatar/{fileName} {
+      allow read: if true;
+      allow write: if isOwner(userId) && isImage() && isValidSize(5 * 1024 * 1024);
+    }
+
+    // =========================================================================
+    // APPLICATION ATTACHMENTS (/applications/{applicationId}/{allPaths=**} & /users/{userId}/applications/{applicationId}/{allPaths=**})
+    // Max 25MB, pdf/doc/image types
+    // =========================================================================
+    match /applications/{applicationId}/{allPaths=**} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() &&
+                     (isImage() || isDocument()) &&
+                     isValidSize(25 * 1024 * 1024);
+    }
+
+    match /users/{userId}/applications/{applicationId}/{allPaths=**} {
+      allow read: if isAuthenticated() && (isOwner(userId) || isAdmin());
+      allow write: if isAuthenticated() &&
+                     (isOwner(userId) || isAdmin()) &&
+                     (isImage() || isDocument()) &&
+                     isValidSize(25 * 1024 * 1024);
+    }
+
+    // =========================================================================
+    // OPPORTUNITY ASSETS & DOCUMENTS (/opportunities/{opportunityId}/{fileName})
+    // =========================================================================
+    match /opportunities/{opportunityId}/{fileName} {
+      allow read: if true;
+      allow write: if isAdmin() && isValidSize(30 * 1024 * 1024);
+    }
+
+    // =========================================================================
+    // VERIFICATION EVIDENCE (/verification/{opportunityId}/{fileName})
+    // Only admins can upload evidence; read restricted to authenticated users
+    // =========================================================================
+    match /verification/{opportunityId}/{fileName} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin() && isValidSize(20 * 1024 * 1024);
+    }
+
+    // =========================================================================
+    // AFFILIATE LOGOS (/affiliates/{offerId}/{fileName})
+    // =========================================================================
+    match /affiliates/{offerId}/{fileName} {
+      allow read: if true;
+      allow write: if isAdmin() && isImage() && isValidSize(5 * 1024 * 1024);
+    }
+  }
+}
