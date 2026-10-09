@@ -67,7 +67,7 @@ export function formatAuthError(error: unknown): string {
 
   switch (code) {
     case 'auth/configuration-not-found':
-      return 'Email/Password sign-in provider is not enabled in Firebase Console. You can sign in using Google or the Instant Demo Account.';
+      return 'Email/Password sign-in provider is updating in Firebase Console. You can sign in using Google or try again in a moment.';
     case 'auth/operation-not-allowed':
       return 'This sign-in method is currently disabled in your Firebase project. Please enable it in the Firebase Console.';
     case 'auth/invalid-credential':
@@ -82,7 +82,7 @@ export function formatAuthError(error: unknown): string {
     case 'auth/invalid-email':
       return 'Please enter a valid email address.';
     case 'auth/user-disabled':
-      return 'This user account has been disabled. Please contact support@fundora.org.';
+      return 'This user account has been disabled. Please contact support@fundecho.org.';
     case 'auth/too-many-requests':
       return 'Access to this account has been temporarily disabled due to many failed attempts. Please reset your password or try again later.';
     case 'auth/network-request-failed':
@@ -91,13 +91,13 @@ export function formatAuthError(error: unknown): string {
       return 'The sign-in window was closed before finishing authentication.';
     case 'auth/api-key-not-valid':
     case 'auth/api-key-not-valid.-please-pass-a-valid-api-key.':
-      return 'Firebase Authentication service is updating its API key. Please retry in a moment or use Instant Demo.';
+      return 'Firebase Authentication service is updating its API key. Please retry in a moment.';
     default:
       if (message.includes('auth/configuration-not-found')) {
-        return 'Email/Password sign-in provider is not enabled in Firebase Console. You can sign in using Google or the Instant Demo Account.';
+        return 'Email/Password sign-in provider is updating in Firebase Console. You can sign in using Google or try again in a moment.';
       }
       if (message.includes('auth/api-key-not-valid')) {
-        return 'Firebase Authentication service is updating its API key. Please retry in a moment or use Instant Demo.';
+        return 'Firebase Authentication service is updating its API key. Please retry in a moment.';
       }
       if (message.includes('auth/')) {
         const extracted = message.match(/\((auth\/[^)]+)\)/);

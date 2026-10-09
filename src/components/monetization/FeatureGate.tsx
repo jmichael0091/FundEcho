@@ -176,7 +176,7 @@ export const FeatureGate: React.FC<FeatureGateProps> = ({
 
       <div className="inline-flex items-center gap-1.5 text-[10px] text-slate-400 font-medium pt-1">
         <ShieldCheck className="w-3 h-3 text-emerald-500" />
-        <span>Demo Sandbox Mode &bull; Flexible Funding Tools</span>
+        <span>FundEcho Premium &bull; Intelligent Funding Tools</span>
       </div>
     </div>
   );

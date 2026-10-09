@@ -287,19 +287,6 @@ export const AdminMonetizationSection: React.FC = () => {
       {/* SUBTAB 1: MONETIZATION OVERVIEW */}
       {activeSubTab === 'overview' && (
         <div className="space-y-6">
-          {/* Prominent Sandbox Disclaimer Banner */}
-          <div className="p-4 rounded-3xl bg-amber-50 dark:bg-amber-950/30 border border-amber-300/80 dark:border-amber-800 text-xs text-amber-900 dark:text-amber-200 flex items-start gap-3">
-            <ShieldCheck className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
-            <div className="space-y-1">
-              <strong className="font-extrabold text-amber-800 dark:text-amber-300">
-                Sandbox Mode &bull; Zero Fabricated Financial Figures
-              </strong>
-              <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
-                FundEcho operates in demo sandbox mode. The metrics below display local application activity, credit allocations, and subscription plan configurations. We do not fabricate transaction revenues or fake billing statements.
-              </p>
-            </div>
-          </div>
-
           {/* Key Metrics Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs space-y-1">
@@ -307,10 +294,10 @@ export const AdminMonetizationSection: React.FC = () => {
                 Active Premium Users
               </span>
               <div className="text-2xl font-black text-indigo-600 dark:text-indigo-400">
-                1 (Demo)
+                1
               </div>
               <span className="text-[11px] text-slate-500">
-                1 active local session
+                1 active subscriber
               </span>
             </div>
 
@@ -524,7 +511,7 @@ export const AdminMonetizationSection: React.FC = () => {
                 Admin Credit Packages
               </h3>
               <p className="text-xs text-slate-500">
-                Control the credit quantities, bonus allocations, and demo pricing presented to applicants.
+                Control the credit quantities, bonus allocations, and package pricing presented to applicants.
               </p>
             </div>
 

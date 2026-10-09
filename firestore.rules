@@ -21,6 +21,7 @@ service cloud.firestore {
     function isAdmin() {
       return isSignedIn() && (
         request.auth.token.email.lower() in [
+          'jmichael0091@gmail.com',
           'jmichrepublic@gmail.com',
           'admin@fundecho.org',
           'admin@fundora.org'
@@ -143,7 +144,14 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
-    // 11. Credit Wallets & Transactions
+    // 11. Followed Funders Collection (Funder Updates & Notifications)
+    match /followed_funders/{followId} {
+      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isSignedIn() && (request.resource.data.userId == request.auth.uid || isAdmin());
+      allow update, delete: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+    }
+
+    // 12. Credit Wallets & Transactions
     match /creditWallets/{userId} {
       allow read: if isOwner(userId) || isAdmin();
       allow write: if isOwner(userId) || isAdmin();

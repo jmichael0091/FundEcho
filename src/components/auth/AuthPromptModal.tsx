@@ -7,7 +7,6 @@ export interface AuthPromptModalProps {
   isOpen: boolean;
   onClose: () => void;
   onNavigate: (page: PageId) => void;
-  onQuickDemoLogin?: () => void;
   opportunityTitle?: string;
 }
 
@@ -15,7 +14,6 @@ export const AuthPromptModal: React.FC<AuthPromptModalProps> = ({
   isOpen,
   onClose,
   onNavigate,
-  onQuickDemoLogin,
   opportunityTitle,
 }) => {
   if (!isOpen) return null;

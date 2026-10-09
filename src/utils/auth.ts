@@ -7,17 +7,17 @@ const STORAGE_KEYS = {
   BOOKMARKS: 'fundora_saved_opportunities',
 };
 
-// Initial demo user for instant zero-friction testing
+// Baseline user profile template
 export const INITIAL_DEMO_USER: UserProfile = {
-  id: 'user-demo-1',
-  name: 'Alex Morgan',
-  email: 'alex.morgan@example.com',
+  id: 'user-default-seeker',
+  name: 'Funding Seeker',
+  email: 'seeker@fundecho.org',
   country: 'Global / Multi-regional',
-  interests: ['entrepreneurship-business', 'climate-sustainability', 'technology-innovation'],
+  interests: ['entrepreneurship-business', 'technology-innovation'],
   preferredFundingTypes: ['Business Funding', 'Grant', 'Fellowship'],
   avatarBg: 'bg-indigo-600',
-  initials: 'AM',
-  createdAt: '2025-01-15',
+  initials: 'FS',
+  createdAt: '2026-01-01',
   rememberSession: true,
 };
 
@@ -48,18 +48,7 @@ function getUsersRegistry(): Record<string, { user: UserProfile; passwordHash: s
     // fallback
   }
 
-  // Pre-seed demo user
-  const initialRegistry: Record<string, { user: UserProfile; passwordHash: string }> = {
-    'alex.morgan@example.com': {
-      user: INITIAL_DEMO_USER,
-      passwordHash: 'password123',
-    },
-  };
-  try {
-    localStorage.setItem(STORAGE_KEYS.USERS_DB, JSON.stringify(initialRegistry));
-  } catch {
-    // fallback
-  }
+  const initialRegistry: Record<string, { user: UserProfile; passwordHash: string }> = {};
   return initialRegistry;
 }
 
@@ -102,20 +91,12 @@ export function loginUser(
 
   const match = registry[normalizedEmail];
   if (!match) {
-    // If not in registry, allow demo login or reject with clear message
-    if (normalizedEmail === 'alex.morgan@example.com' || normalizedEmail === 'demo@fundora.org') {
-      const user = { ...INITIAL_DEMO_USER, email: normalizedEmail, rememberSession };
-      try {
-        localStorage.setItem(STORAGE_KEYS.SESSION, JSON.stringify(user));
-      } catch {}
-      return { success: true, user };
-    }
     return { success: false, error: 'No account found with this email address. Please sign up first.' };
   }
 
   // Check password
-  if (match.passwordHash !== password && password !== 'password123' && password !== 'demo123') {
-    return { success: false, error: 'Incorrect password. Try "password123" for demo accounts.' };
+  if (match.passwordHash !== password) {
+    return { success: false, error: 'Incorrect password. Please verify and try again.' };
   }
 
   const user = { ...match.user, rememberSession };

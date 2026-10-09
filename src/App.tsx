@@ -67,6 +67,7 @@ import {
 import { processApplicationDeadlineReminders } from './services/firebase/deadlineReminderService';
 import {
   fetchFundingOpportunitiesFromFirestore,
+  fetchCategoriesFromFirestore,
   saveOpportunityToFirestore,
   unsaveOpportunityFromFirestore,
   fetchUserSavedOpportunityIds,
@@ -129,8 +130,15 @@ export default function App() {
       setAllOpportunities(opps);
     });
 
-    const cats = getAdminCategories();
-    setAllCategories(cats);
+    fetchCategoriesFromFirestore().then((cats) => {
+      if (cats && cats.length > 0) {
+        setAllCategories(cats);
+      } else {
+        setAllCategories(getAdminCategories());
+      }
+    }).catch(() => {
+      setAllCategories(getAdminCategories());
+    });
   };
 
   // STEP 19: Firestore Initial Sync & Connection Test
@@ -143,6 +151,14 @@ export default function App() {
       }
     }).catch((err) => {
       console.warn('[FUNDORA] Initial Firestore catalog fetch warning:', err);
+    });
+
+    fetchCategoriesFromFirestore().then((cats) => {
+      if (cats && cats.length > 0) {
+        setAllCategories(cats);
+      }
+    }).catch((err) => {
+      console.warn('[FUNDORA] Initial Firestore categories fetch warning:', err);
     });
   }, []);
 
@@ -265,7 +281,14 @@ export default function App() {
   };
 
   const handleSelectOpportunityById = (oppId: string) => {
-    const found = allOpportunities.find((o) => o.id === oppId);
+    let found = allOpportunities.find((o) => o.id === oppId);
+    if (!found) {
+      const publicOpps = getPublicOpportunities();
+      found = publicOpps.find((o) => o.id === oppId);
+      if (found) {
+        setAllOpportunities((prev) => [found!, ...prev]);
+      }
+    }
     if (found) {
       handleSelectOpportunity(found);
       setIsNotificationCenterOpen(false);
@@ -862,6 +885,9 @@ export default function App() {
             onSelectCategory={handleSelectCategoryLanding}
             onSelectCountry={handleSelectCountryLanding}
             onSelectFundingType={handleSelectFundingTypeLanding}
+            onOpportunityAdded={(newOpp) => {
+              setAllOpportunities((prev) => [newOpp, ...prev]);
+            }}
           />
         )}
 

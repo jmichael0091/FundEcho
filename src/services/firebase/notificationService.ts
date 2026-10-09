@@ -351,6 +351,7 @@ export async function createNotification(
     deliveredAt?: string | null;
     opportunityTitle?: string;
     urgency?: 'urgent' | 'high' | 'normal' | 'low';
+    actionLabel?: string;
     targetPage?: string;
     customId?: string;
   }
@@ -380,6 +381,7 @@ export async function createNotification(
     opportunityTitle: payload.opportunityTitle || '',
     urgency: payload.urgency || 'normal',
     targetPage: payload.targetPage,
+    actionLabel: payload.actionLabel,
     isRead: false,
   };
 

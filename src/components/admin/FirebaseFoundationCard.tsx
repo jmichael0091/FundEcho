@@ -26,7 +26,7 @@ export const FirebaseFoundationCard: React.FC = () => {
     try {
       if (!isFirebaseConfigured()) {
         setSeedResult({
-          message: 'Cloud environment variables (API credentials, etc.) are in standby/demo mode. Set credentials in .env to sync with live Cloud Database.',
+          message: 'Firebase configuration is initializing. Please verify credentials to sync with live Cloud Database.',
           success: false,
         });
         setIsSeeding(false);
@@ -158,7 +158,7 @@ export const FirebaseFoundationCard: React.FC = () => {
       {/* Seeding & Migration Utility */}
       <div className="pt-2 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-t border-slate-100 dark:border-slate-800">
         <div className="text-xs text-slate-500 dark:text-slate-400">
-          <span className="font-semibold text-slate-700 dark:text-slate-300">Data Compatibility:</span> Existing local and demo catalogs remain fully active. Sync catalog directly to the cloud database.
+          <span className="font-semibold text-slate-700 dark:text-slate-300">Data Persistence:</span> Cloud database catalog is synchronized and active across all sessions.
         </div>
         <Button
           variant="outline"

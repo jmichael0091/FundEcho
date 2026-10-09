@@ -153,7 +153,7 @@ export const FeatureGateModal: React.FC<FeatureGateModalProps> = ({
                 className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-sm transition-colors"
               >
                 <Zap className="w-3.5 h-3.5 fill-current" />
-                <span>Activate Demo Premium (Free)</span>
+                <span>Activate Premium Plan</span>
               </button>
               <button
                 type="button"

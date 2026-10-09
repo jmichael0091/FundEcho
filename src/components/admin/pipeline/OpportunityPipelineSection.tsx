@@ -252,7 +252,7 @@ export const OpportunityPipelineSection: React.FC<OpportunityPipelineSectionProp
 
   const handleResetDemo = () => {
     resetPipelineDemoData();
-    showToast('Reset Opportunity Pipeline to initial demo dataset.', 'info');
+    showToast('Reset Opportunity Pipeline queue to baseline dataset.', 'info');
     reloadData();
   };
 
@@ -310,9 +310,9 @@ export const OpportunityPipelineSection: React.FC<OpportunityPipelineSectionProp
             id="btn-pipeline-reset-demo"
             onClick={handleResetDemo}
             className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-all"
-            title="Reset to demo discovery dataset"
+            title="Reset pipeline queue"
           >
-            Reset Demo Data
+            Reset Pipeline Queue
           </button>
 
           <button

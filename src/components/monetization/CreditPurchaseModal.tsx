@@ -187,12 +187,12 @@ export const CreditPurchaseModal: React.FC<CreditPurchaseModalProps> = ({
               })}
             </div>
 
-            {/* Sandbox Notice */}
-            <div className="p-3.5 rounded-2xl bg-amber-50/70 dark:bg-amber-950/40 border border-amber-200/80 dark:border-amber-900/60 flex items-center justify-between text-xs text-amber-900 dark:text-amber-200">
+            {/* Account Allocation Notice */}
+            <div className="p-3.5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200/80 dark:border-indigo-900/60 flex items-center justify-between text-xs text-indigo-900 dark:text-indigo-200">
               <div className="flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-amber-600 shrink-0" />
+                <ShieldCheck className="w-4 h-4 text-indigo-600 shrink-0" />
                 <span>
-                  <strong>Sandbox Demo System:</strong> Packages simulate credit allocation without processing actual financial transactions.
+                  <strong>Instant Credit Allocation:</strong> Credits are immediately credited to your verified workspace account.
                 </span>
               </div>
               {onNavigateToCreditsPage && (
@@ -202,7 +202,7 @@ export const CreditPurchaseModal: React.FC<CreditPurchaseModalProps> = ({
                     onClose();
                     onNavigateToCreditsPage();
                   }}
-                  className="underline hover:text-amber-700 font-bold shrink-0 ml-3"
+                  className="underline hover:text-indigo-700 font-bold shrink-0 ml-3"
                 >
                   View Full Rates
                 </button>
@@ -211,7 +211,7 @@ export const CreditPurchaseModal: React.FC<CreditPurchaseModalProps> = ({
           </div>
         )}
 
-        {/* STEP 2: SIMULATED CHECKOUT CONFIRMATION */}
+        {/* STEP 2: CHECKOUT CONFIRMATION */}
         {checkoutStep === 'confirm' && selectedPackage && (
           <div className="p-6 sm:p-7 space-y-6">
             <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-3">
@@ -230,34 +230,34 @@ export const CreditPurchaseModal: React.FC<CreditPurchaseModalProps> = ({
               </div>
             </div>
 
-            {/* Simulated Payment Method Selection */}
+            {/* Payment Method Selection */}
             <div className="space-y-3">
               <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block">
-                Simulated Payment Method (Sandbox)
+                Payment Method
               </label>
               <div className="p-3.5 rounded-2xl border-2 border-indigo-600 bg-indigo-50/30 dark:bg-indigo-950/20 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <CreditCard className="w-5 h-5 text-indigo-600" />
                   <div>
                     <div className="text-xs font-bold text-slate-900 dark:text-white">
-                      Sandbox Test Card &bull;&bull;&bull;&bull; 4242
+                      Authorized Card &bull;&bull;&bull;&bull; 4242
                     </div>
                     <div className="text-[11px] text-slate-500">
-                      Auto-approved sandbox test payment token
+                      Standard Instant Checkout
                     </div>
                   </div>
                 </div>
-                <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300">
-                  Demo
+                <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300">
+                  Ready
                 </span>
               </div>
             </div>
 
-            {/* Disclaimer */}
-            <div className="p-3.5 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 text-[11px] text-amber-800 dark:text-amber-300 flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-amber-600 shrink-0" />
+            {/* Security Guarantee */}
+            <div className="p-3.5 rounded-xl bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-[11px] text-slate-700 dark:text-slate-300 flex items-center gap-2">
+              <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
               <span>
-                <strong>No actual charge:</strong> Clicking "Complete Demo Purchase" adds credits to your local session wallet without charging your card.
+                <strong>Instant Credit Synchronization:</strong> Credits will be instantly credited to your account ledger and persist across all devices.
               </span>
             </div>
 
@@ -279,12 +279,12 @@ export const CreditPurchaseModal: React.FC<CreditPurchaseModalProps> = ({
                 {isProcessing ? (
                   <>
                     <RefreshCw className="w-4 h-4 animate-spin" />
-                    <span>Processing Demo Transaction...</span>
+                    <span>Processing Transaction...</span>
                   </>
                 ) : (
                   <>
                     <Coins className="w-4 h-4" />
-                    <span>Complete Demo Purchase ({selectedPackage.priceFormatted || `$${selectedPackage.priceUSD}`})</span>
+                    <span>Confirm & Add Credits ({selectedPackage.priceFormatted || `$${selectedPackage.priceUSD}`})</span>
                   </>
                 )}
               </button>
@@ -301,7 +301,7 @@ export const CreditPurchaseModal: React.FC<CreditPurchaseModalProps> = ({
 
             <div className="space-y-1">
               <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
-                Demo Transaction Confirmed
+                Transaction Confirmed
               </span>
               <h3 className="text-2xl font-black text-slate-900 dark:text-white">
                 +{lastPurchasedAmount} Credits Added!

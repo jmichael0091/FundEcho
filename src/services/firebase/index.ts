@@ -22,3 +22,5 @@ export * from './validators';
 export * from './firestoreService';
 export * from './migrationBridge';
 export * from './crawlerPipelineService';
+export * from './funderFollowService';
+export * from './categoryService';

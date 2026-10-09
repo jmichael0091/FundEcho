@@ -18,87 +18,44 @@ const STORAGE_KEYS = {
   ADMIN_MODE: 'fundora_admin_mode_active',
 };
 
-// Demo Admin User for testing & role checking
+// Platform Administrator reference
 export const DEMO_ADMIN_USER: UserProfile = {
-  id: 'admin-fundora-1',
-  name: 'Elena Rostova',
-  email: 'admin@fundora.org',
-  country: 'United Kingdom',
+  id: 'admin-fundecho-main',
+  name: 'Platform Administrator',
+  email: 'admin@fundecho.org',
+  country: 'Global',
   interests: ['grants', 'business-funding', 'research'],
   preferredFundingTypes: ['Grant', 'Research Grant', 'Business Funding'],
   avatarBg: 'bg-indigo-700',
-  initials: 'ER',
-  createdAt: '2025-01-01',
+  initials: 'AD',
+  createdAt: '2026-01-01',
   rememberSession: true,
+  role: 'admin',
 };
 
-// Initial admin users list
+// Initial admin users list - Real users are synchronized from Firestore users collection
 const INITIAL_ADMIN_USERS: AdminUserRecord[] = [
   {
-    id: 'user-demo-1',
-    name: 'Alex Morgan',
-    email: 'alex.morgan@example.com',
-    country: 'Global / Multi-regional',
-    registeredAt: '2025-01-15',
-    accountStatus: 'Active',
-    role: 'user',
-    lastLoginAt: '2026-08-30',
-    applicantType: 'Early-Stage Startup / Founder',
-  },
-  {
-    id: 'admin-fundora-1',
-    name: 'Elena Rostova',
-    email: 'admin@fundora.org',
-    country: 'United Kingdom',
-    registeredAt: '2025-01-01',
+    id: 'admin-fundecho-main',
+    name: 'Platform Administrator',
+    email: 'admin@fundecho.org',
+    country: 'Global',
+    registeredAt: '2026-01-01',
     accountStatus: 'Active',
     role: 'admin',
     lastLoginAt: '2026-09-01',
     applicantType: 'Platform Administrator',
   },
   {
-    id: 'user-sample-2',
-    name: 'Dr. Kwame Mensah',
-    email: 'k.mensah@biotech-institute.org',
-    country: 'Ghana',
-    registeredAt: '2025-03-10',
+    id: 'admin-jmichael',
+    name: 'JMichael',
+    email: 'JMichael0091@gmail.com',
+    country: 'Global',
+    registeredAt: '2026-01-01',
     accountStatus: 'Active',
-    role: 'user',
-    lastLoginAt: '2026-08-28',
-    applicantType: 'Academic / Researcher / Faculty',
-  },
-  {
-    id: 'user-sample-3',
-    name: 'Sophia Chen',
-    email: 'sophia.chen@climateaction.io',
-    country: 'Singapore',
-    registeredAt: '2025-04-22',
-    accountStatus: 'Active',
-    role: 'user',
-    lastLoginAt: '2026-08-25',
-    applicantType: 'Non-Profit / NGO / Community Group',
-  },
-  {
-    id: 'user-sample-4',
-    name: 'Marcus Vance',
-    email: 'mvance@creativesyndicate.com',
-    country: 'United States',
-    registeredAt: '2025-06-05',
-    accountStatus: 'Pending Verification',
-    role: 'user',
-    lastLoginAt: '2026-07-14',
-    applicantType: 'Individual Innovator / Professional',
-  },
-  {
-    id: 'user-sample-5',
-    name: 'Fatima Al-Hassan',
-    email: 'fatima.al@renewabletech.ae',
-    country: 'United Arab Emirates',
-    registeredAt: '2025-07-19',
-    accountStatus: 'Active',
-    role: 'user',
-    lastLoginAt: '2026-08-31',
-    applicantType: 'Early-Stage Startup / Founder',
+    role: 'admin',
+    lastLoginAt: '2026-09-01',
+    applicantType: 'Platform Administrator',
   }
 ];
 
@@ -490,8 +447,17 @@ export function updateAdminUserRole(userId: string, role: 'user' | 'admin'): Adm
 
 export function isUserAdmin(user: UserProfile | null): boolean {
   if (!user) return false;
-  if (user.email === 'admin@fundora.org' || user.id === 'admin-fundora-1') return true;
+  const email = (user.email || '').toLowerCase().trim();
+  if (
+    email === 'jmichael0091@gmail.com' ||
+    email === 'jmichrepublic@gmail.com' ||
+    email === 'admin@fundecho.org' ||
+    email === 'admin@fundora.org' ||
+    user.id === 'admin-fundecho-main'
+  ) {
+    return true;
+  }
   const users = getAdminUsersList();
-  const found = users.find((u) => u.email.toLowerCase() === user.email.toLowerCase());
-  return found?.role === 'admin';
+  const found = users.find((u) => u.email.toLowerCase() === email);
+  return found?.role === 'admin' || user.role === 'admin' || user.role === 'superAdmin';
 }

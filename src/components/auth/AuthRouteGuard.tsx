@@ -14,7 +14,6 @@ interface AuthRouteGuardProps {
   user: UserProfile | null;
   isLoading: boolean;
   onNavigate: (page: PageId) => void;
-  onQuickDemoLogin?: () => void;
   children: React.ReactNode;
 }
 
@@ -55,7 +54,6 @@ export const AuthRouteGuard: React.FC<AuthRouteGuardProps> = ({
   user,
   isLoading,
   onNavigate,
-  onQuickDemoLogin,
   children,
 }) => {
   const protection = PROTECTED_PAGES[page];
@@ -142,6 +140,7 @@ export const AuthRouteGuard: React.FC<AuthRouteGuardProps> = ({
     user && (
       user.role === 'admin' ||
       user.role === 'superAdmin' ||
+      user.email?.toLowerCase() === 'jmichael0091@gmail.com' ||
       user.email?.toLowerCase() === 'jmichrepublic@gmail.com' ||
       user.email?.toLowerCase() === 'admin@fundecho.org' ||
       user.email?.toLowerCase() === 'admin@fundora.org'

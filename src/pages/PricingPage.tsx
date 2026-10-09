@@ -56,10 +56,10 @@ export const PricingPage: React.FC<PricingPageProps> = ({ onNavigate }) => {
 
     if (plan.tier === 'free') {
       cancelDemoSubscription();
-      setSuccessToast('Switched to Free Tier (Demo).');
+      setSuccessToast('Switched to Explorer Free tier.');
     } else {
       await activateDemoSubscription(plan.id, billingCycle);
-      setSuccessToast(`Successfully activated ${plan.name} (${billingCycle}) in Demo Mode!`);
+      setSuccessToast(`Successfully activated ${plan.name} (${billingCycle})!`);
     }
 
     setTimeout(() => {
@@ -86,7 +86,7 @@ export const PricingPage: React.FC<PricingPageProps> = ({ onNavigate }) => {
             <div>
               <div className="font-extrabold">{successToast}</div>
               <div className="text-[10px] text-emerald-300 font-normal">
-                Sandbox Mode &bull; No credit card or real money charged
+                Membership updated successfully
               </div>
             </div>
           </div>
@@ -105,10 +105,10 @@ export const PricingPage: React.FC<PricingPageProps> = ({ onNavigate }) => {
             <span>Back to Opportunities</span>
           </button>
 
-          {/* Sandbox Indicator */}
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-[11px] font-bold text-indigo-700 dark:text-indigo-300">
-            <ShieldCheck className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
-            <span>Sandbox Preview Mode &bull; Simulated Transactions</span>
+          {/* Secure Verified Plans Badge */}
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-[11px] font-bold text-emerald-700 dark:text-emerald-300">
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+            <span>Verified Membership Access</span>
           </div>
         </div>
 
@@ -216,7 +216,7 @@ export const PricingPage: React.FC<PricingPageProps> = ({ onNavigate }) => {
                     : 'border border-slate-300 dark:border-slate-700 hover:bg-slate-100 text-slate-800 dark:text-slate-200'
                 }`}
               >
-                {!isPremium ? 'Active Plan' : 'Downgrade to Free (Demo)'}
+                {!isPremium ? 'Active Plan' : 'Downgrade to Free'}
               </button>
             </div>
           </div>
@@ -302,12 +302,12 @@ export const PricingPage: React.FC<PricingPageProps> = ({ onNavigate }) => {
                     }`}
                   >
                     <Sparkles className="w-4 h-4 text-indigo-200" />
-                    <span>{isCurrentActive ? 'Active Plan' : `Activate ${plan.name} (Demo)`}</span>
+                    <span>{isCurrentActive ? 'Active Plan' : `Activate ${plan.name}`}</span>
                   </button>
 
                   <div className="flex items-center justify-center gap-1.5 text-[10px] text-slate-400 font-medium">
                     <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
-                    <span>Instant demo upgrade &bull; Cancel anytime</span>
+                    <span>Instant activation &bull; Cancel anytime</span>
                   </div>
                 </div>
               </div>

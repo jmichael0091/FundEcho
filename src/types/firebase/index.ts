@@ -474,6 +474,7 @@ export const FIRESTORE_COLLECTIONS = {
   FCM_TOKENS: 'fcmTokens',
   CATEGORIES: 'categories',
   AFFILIATE_OFFERS: 'affiliate_offers',
+  FOLLOWED_FUNDERS: 'followed_funders',
   // Step 2 Crawler Pipeline Core Collections
   DRAFTS: 'drafts',
   SOURCES: 'sources',
@@ -551,6 +552,16 @@ export interface FirestoreSavedOpportunityDoc {
   opportunityId: string;
   createdAt: FirestoreDateTime;
   notes?: string;
+}
+
+export interface FollowedFunderDoc {
+  id: string; // `${userId}_${funderSlug}`
+  userId: string;
+  funderSlug: string;
+  funderName: string;
+  userEmail?: string;
+  followedAt: FirestoreDateTime;
+  notificationsEnabled: boolean;
 }
 
 export * from '../opportunitySchema';

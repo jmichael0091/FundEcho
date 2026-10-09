@@ -135,18 +135,6 @@ export const BillingAndCreditsSection: React.FC<BillingAndCreditsSectionProps> =
             <History className="w-3.5 h-3.5" />
             <span>Audit Trail</span>
           </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab('dev_controls')}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1 ${
-              activeTab === 'dev_controls'
-                ? 'bg-amber-500 text-slate-950 shadow-xs'
-                : 'text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/40'
-            }`}
-          >
-            <Sliders className="w-3.5 h-3.5" />
-            <span>Demo Controls</span>
-          </button>
         </div>
       </div>
 
@@ -483,97 +471,6 @@ export const BillingAndCreditsSection: React.FC<BillingAndCreditsSectionProps> =
               </table>
             </div>
           )}
-        </div>
-      )}
-
-      {/* TAB 3: DEMO CONTROLS (DEVELOPMENT / TEST SIMULATION) */}
-      {activeTab === 'dev_controls' && (
-        <div className="p-6 sm:p-7 rounded-3xl bg-amber-50/50 dark:bg-amber-950/20 border border-amber-300/80 dark:border-amber-800 shadow-xs space-y-6">
-          <div className="space-y-1">
-            <div className="inline-flex items-center gap-1.5 text-xs font-black text-amber-700 dark:text-amber-400">
-              <Sliders className="w-4 h-4" />
-              <span>Sandbox Subscription & Role Simulation</span>
-            </div>
-            <h3 className="text-base font-extrabold text-slate-900 dark:text-white">
-              Instant State Toggles for Development & QA
-            </h3>
-            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-              Quickly simulate how FundEcho behaves under different subscription states without needing real payment credentials.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
-            {/* Toggle 1: Activate Premium */}
-            <button
-              type="button"
-              onClick={() => activateDemoSubscription('plan-premium', 'annual')}
-              className="p-3.5 rounded-2xl bg-white dark:bg-slate-800 border border-indigo-200 dark:border-indigo-800 text-left hover:border-indigo-500 transition-all space-y-1"
-            >
-              <div className="flex items-center gap-1.5 text-xs font-black text-indigo-600 dark:text-indigo-400">
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>Activate Premium</span>
-              </div>
-              <p className="text-[11px] text-slate-500 leading-tight">
-                Sets tier to Premium and status to Active.
-              </p>
-            </button>
-
-            {/* Toggle 2: Expire Premium */}
-            <button
-              type="button"
-              onClick={expireDemoSubscription}
-              className="p-3.5 rounded-2xl bg-white dark:bg-slate-800 border border-rose-200 dark:border-rose-800 text-left hover:border-rose-500 transition-all space-y-1"
-            >
-              <div className="flex items-center gap-1.5 text-xs font-black text-rose-600 dark:text-rose-400">
-                <XCircle className="w-3.5 h-3.5" />
-                <span>Expire Subscription</span>
-              </div>
-              <p className="text-[11px] text-slate-500 leading-tight">
-                Simulates expiration date passed; locks gated features.
-              </p>
-            </button>
-
-            {/* Toggle 3: Cancel Subscription */}
-            <button
-              type="button"
-              onClick={cancelDemoSubscription}
-              className="p-3.5 rounded-2xl bg-white dark:bg-slate-800 border border-amber-200 dark:border-amber-800 text-left hover:border-amber-500 transition-all space-y-1"
-            >
-              <div className="flex items-center gap-1.5 text-xs font-black text-amber-600 dark:text-amber-400">
-                <Clock className="w-3.5 h-3.5" />
-                <span>Cancel Subscription</span>
-              </div>
-              <p className="text-[11px] text-slate-500 leading-tight">
-                Disables auto-renewal but retains access.
-              </p>
-            </button>
-
-            {/* Toggle 4: Admin Access Tier */}
-            <button
-              type="button"
-              onClick={toggleAdminDemoTier}
-              className="p-3.5 rounded-2xl bg-white dark:bg-slate-800 border border-purple-200 dark:border-purple-800 text-left hover:border-purple-500 transition-all space-y-1"
-            >
-              <div className="flex items-center gap-1.5 text-xs font-black text-purple-600 dark:text-purple-400">
-                <ShieldCheck className="w-3.5 h-3.5" />
-                <span>{isAdmin ? 'Exit Admin Tier' : 'Enable Admin Tier'}</span>
-              </div>
-              <p className="text-[11px] text-slate-500 leading-tight">
-                Grants completely unrestricted access across the platform.
-              </p>
-            </button>
-          </div>
-
-          <div className="p-3 rounded-xl bg-white/70 dark:bg-slate-850/60 border border-amber-200 dark:border-amber-900 text-xs text-amber-900 dark:text-amber-200 flex items-center justify-between">
-            <span>Current simulated state: <strong>{tier.toUpperCase()} ({status})</strong></span>
-            <button
-              type="button"
-              onClick={restoreDemoSubscription}
-              className="underline text-xs font-bold hover:text-amber-700"
-            >
-              Reset to Clean Free State
-            </button>
-          </div>
         </div>
       )}
     </div>

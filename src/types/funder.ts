@@ -52,3 +52,13 @@ export interface FunderProfile {
   applicationTips: string[];
   officialContactUrl?: string;
 }
+
+export interface FollowedFunderRecord {
+  id: string; // `${userId}_${funderSlug}`
+  userId: string;
+  funderSlug: string;
+  funderName: string;
+  userEmail?: string;
+  followedAt: string;
+  notificationsEnabled: boolean;
+}

@@ -202,38 +202,38 @@ export const MonetizationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     setSubscription(updatedSub);
     refreshCredits();
     
-    trackEvent('upgrade_completed', { planId, cycle, mode: 'demo_sandbox' });
-    showFeedback(`Demo Mode: Activated ${updatedSub.tier.toUpperCase()} plan (${cycle}). Full workspace & tools are now unlocked.`);
+    trackEvent('upgrade_completed', { planId, cycle });
+    showFeedback(`Activated ${updatedSub.tier.toUpperCase()} plan (${cycle}). Full workspace & tools are now unlocked.`);
     setIsUpgradeModalOpen(false);
   };
 
   const cancelDemoSubscription = () => {
     const updated = SubscriptionService.cancelSubscription('current_user');
     setSubscription(updated);
-    showFeedback('Demo Mode: Subscription status set to Cancelled (retains access until expiry).');
+    showFeedback('Subscription status set to Cancelled (retains access until expiry).');
   };
 
   const expireDemoSubscription = () => {
     const updated = SubscriptionService.expireSubscription('current_user');
     setSubscription(updated);
-    showFeedback('Demo Mode: Subscription marked as Expired.');
+    showFeedback('Subscription marked as Expired.');
   };
 
   const restoreDemoSubscription = () => {
     const updated = SubscriptionService.restoreToFree('current_user');
     setSubscription(updated);
-    showFeedback('Demo Mode: Reverted to FundEcho Free tier.');
+    showFeedback('Reverted to FundEcho Free tier.');
   };
 
   const toggleAdminDemoTier = () => {
     if (isAdmin) {
       const updated = SubscriptionService.restoreToFree('current_user');
       setSubscription(updated);
-      showFeedback('Demo Mode: Reverted from Admin to Free tier.');
+      showFeedback('Reverted from Admin to Free tier.');
     } else {
       const updated = SubscriptionService.setAdminTier(true, 'current_user');
       setSubscription(updated);
-      showFeedback('Demo Mode: Switched to ADMIN access — unrestricted limits.');
+      showFeedback('Switched to Administrator access.');
     }
   };
 
@@ -255,8 +255,8 @@ export const MonetizationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     const pkg = packages.find(p => p.id === packageId) || packages[0];
     const totalAdded = pkg.credits + (pkg.bonusCredits || 0);
 
-    trackEvent('credit_package_selected', { packageId: pkg.id, addedAmount: totalAdded, mode: 'demo_sandbox' });
-    showFeedback(`Demo Mode: Added ${totalAdded} credits to your wallet. (Simulated transaction)`);
+    trackEvent('credit_package_selected', { packageId: pkg.id, addedAmount: totalAdded });
+    showFeedback(`Added ${totalAdded} credits to your wallet.`);
     setIsCreditModalOpen(false);
     setIsUpgradeModalOpen(false);
     setIsInsufficientModalOpen(false);

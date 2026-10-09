@@ -116,7 +116,7 @@ export const ApplicationWorkspacePage: React.FC<ApplicationWorkspacePageProps> =
     return createDefaultApplicationDraft(opportunity, userProfile);
   });
 
-  const activeUserId = authUser?.id || userProfile?.id || 'demo-user-1';
+  const activeUserId = authUser?.id || userProfile?.id || 'guest-applicant';
 
   // Initialize or retrieve the Firestore Application record
   useEffect(() => {

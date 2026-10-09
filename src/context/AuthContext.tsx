@@ -513,6 +513,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     isLoggedIn && (
       user?.role === 'admin' ||
       user?.role === 'superAdmin' ||
+      user?.email?.toLowerCase() === 'jmichael0091@gmail.com' ||
       user?.email?.toLowerCase() === 'jmichrepublic@gmail.com' ||
       user?.email?.toLowerCase() === 'admin@fundecho.org' ||
       user?.email?.toLowerCase() === 'admin@fundora.org'

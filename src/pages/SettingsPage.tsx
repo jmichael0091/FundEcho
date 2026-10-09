@@ -70,7 +70,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
     }
 
     setTimeout(() => {
-      setPasswordMsg({ type: 'success', text: 'Password successfully updated (demo).' });
+      setPasswordMsg({ type: 'success', text: 'Password successfully updated.' });
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
@@ -254,7 +254,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                 type="password"
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
-                placeholder="Enter current password (demo: password123)"
+                placeholder="Enter current password"
                 className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
             </div>

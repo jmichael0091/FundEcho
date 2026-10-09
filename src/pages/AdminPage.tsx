@@ -36,8 +36,7 @@ import {
   saveAdminCategory,
   deleteAdminCategory,
   updateAdminUserStatus,
-  updateAdminUserRole,
-  DEMO_ADMIN_USER
+  updateAdminUserRole
 } from '../utils/adminStorage';
 import { getIncomingOpportunities } from '../utils/pipelineStorage';
 import { AdminHeader } from '../components/admin/AdminHeader';
@@ -61,10 +60,29 @@ import {
   updateOpportunityFeaturedInFirestore 
 } from '../services/firebase/firestoreService';
 import {
+  fetchCategoriesFromFirestore,
+  saveCategoryToFirestore,
+  deleteCategoryFromFirestore,
+} from '../services/firebase/categoryService';
+import {
   fetchUsersFromFirestore,
   updateUserRole as updateUserRoleFirestore,
   updateUserAccountStatus as updateUserAccountStatusFirestore,
 } from '../services/firebase/userService';
+import { checkOpportunityForFollowerNotifications } from '../services/firebase/funderFollowService';
+
+const FALLBACK_ADMIN_USER: UserProfile = {
+  id: 'admin-fundecho-main',
+  name: 'Platform Administrator',
+  email: 'admin@fundecho.org',
+  country: 'Global',
+  interests: ['grants', 'business-funding'],
+  preferredFundingTypes: ['Grant', 'Business Funding'],
+  avatarBg: 'bg-indigo-700',
+  initials: 'AD',
+  createdAt: '2026-01-01',
+  role: 'admin',
+};
 
 export interface AdminPageProps {
   currentUser: UserProfile | null;
@@ -100,12 +118,21 @@ export const AdminPage: React.FC<AdminPageProps> = ({
       console.warn('Firestore fetch fallback to admin storage:', e);
     }
 
-    const cats = getAdminCategories();
-    let usrs = getAdminUsersList();
+    let cats = getAdminCategories();
+    try {
+      const fbCats = await fetchCategoriesFromFirestore();
+      if (fbCats && fbCats.length > 0) {
+        cats = fbCats;
+      }
+    } catch (e) {
+      console.warn('Firestore categories fetch fallback:', e);
+    }
+
+    let usrs: AdminUserRecord[] = [];
     try {
       const fbUsers = await fetchUsersFromFirestore();
       if (fbUsers && fbUsers.length > 0) {
-        const mappedFbUsers: AdminUserRecord[] = fbUsers.map(u => ({
+        usrs = fbUsers.map(u => ({
           id: u.id,
           name: u.fullName || u.displayName || 'Opportunity Seeker',
           email: u.email,
@@ -116,12 +143,27 @@ export const AdminPage: React.FC<AdminPageProps> = ({
           lastLoginAt: typeof u.lastLoginAt === 'string' ? u.lastLoginAt : new Date().toISOString(),
           applicantType: u.organizationType || 'Opportunity Seeker',
         }));
-        const existingEmails = new Set(mappedFbUsers.map(u => u.email.toLowerCase()));
-        const remainingLocal = usrs.filter(u => !existingEmails.has(u.email.toLowerCase()));
-        usrs = [...mappedFbUsers, ...remainingLocal];
       }
     } catch (e) {
       console.warn('Firestore users fetch fallback:', e);
+    }
+
+    if (usrs.length === 0) {
+      const local = getAdminUsersList().filter(u => !u.email.includes('example.com') && !u.id.includes('demo') && !u.id.includes('sample'));
+      if (currentUser && !local.some(u => u.email === currentUser.email)) {
+        local.push({
+          id: currentUser.id,
+          name: currentUser.name,
+          email: currentUser.email,
+          role: currentUser.role === 'admin' ? 'admin' : 'user',
+          accountStatus: 'Active',
+          country: currentUser.country,
+          registeredAt: currentUser.createdAt || new Date().toISOString(),
+          lastLoginAt: new Date().toISOString(),
+          applicantType: 'Administrator',
+        });
+      }
+      usrs = local;
     }
 
     const currentStats = getAdminPlatformStats();
@@ -172,6 +214,14 @@ export const AdminPage: React.FC<AdminPageProps> = ({
         ...formData,
         id: assignedId,
       });
+
+      // Notify followers if this opportunity belongs to a followed funder
+      checkOpportunityForFollowerNotifications(saved, currentUser?.id).then(({ notifiedCount, funderName }) => {
+        if (notifiedCount > 0) {
+          console.log(`[Admin] Notified ${notifiedCount} follower(s) of ${funderName} for "${saved.title}"`);
+        }
+      }).catch(console.warn);
+
       await reloadData();
       setEditingOpportunity(null);
       showToast(`Opportunity "${formData.title}" saved successfully with status "${formData.status || 'Open'}".`);
@@ -179,6 +229,13 @@ export const AdminPage: React.FC<AdminPageProps> = ({
     } catch (err: any) {
       console.warn('Firestore save fallback to local:', err);
       const saved = saveOpportunity(formData);
+      
+      checkOpportunityForFollowerNotifications(saved, currentUser?.id).then(({ notifiedCount, funderName }) => {
+        if (notifiedCount > 0) {
+          console.log(`[Admin] Notified ${notifiedCount} follower(s) of ${funderName} for "${saved.title}"`);
+        }
+      }).catch(console.warn);
+
       await reloadData();
       setEditingOpportunity(null);
       showToast(`Saved opportunity "${saved.title}".`);
@@ -302,16 +359,28 @@ export const AdminPage: React.FC<AdminPageProps> = ({
   };
 
   // Category Actions
-  const handleSaveCategory = (cat: Category) => {
+  const handleSaveCategory = async (cat: Category) => {
+    try {
+      await saveCategoryToFirestore(cat);
+    } catch (err) {
+      console.warn('Firestore save category fallback:', err);
+    }
     saveAdminCategory(cat);
-    reloadData();
-    showToast(`Category "${cat.name}" updated.`);
+    await reloadData();
+    onOpportunityUpdated?.();
+    showToast(`Category "${cat.name}" updated in database.`);
   };
 
-  const handleDeleteCategory = (categoryId: string) => {
+  const handleDeleteCategory = async (categoryId: string) => {
+    try {
+      await deleteCategoryFromFirestore(categoryId);
+    } catch (err) {
+      console.warn('Firestore delete category fallback:', err);
+    }
     deleteAdminCategory(categoryId);
-    reloadData();
-    showToast('Category deleted.');
+    await reloadData();
+    onOpportunityUpdated?.();
+    showToast('Category deleted from database.');
   };
 
   // User Actions
@@ -413,7 +482,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({
       {/* Top Admin Header */}
       <AdminHeader
         stats={stats}
-        currentUser={currentUser || DEMO_ADMIN_USER}
+        currentUser={currentUser || FALLBACK_ADMIN_USER}
         onExitAdmin={() => onNavigate('dashboard')}
       />
 
@@ -503,7 +572,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({
           {activeTab === 'sources' && (
             <SourceRegistryManagement
               categories={categories}
-              currentUser={currentUser || DEMO_ADMIN_USER}
+              currentUser={currentUser || FALLBACK_ADMIN_USER}
             />
           )}
 

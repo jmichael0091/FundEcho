@@ -26,7 +26,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
   onLoginSuccess,
   pendingSaveTitle,
 }) => {
-  const { login, signInWithGoogle, quickDemoLogin, quickAdminLogin } = useAuth();
+  const { login, signInWithGoogle } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberSession, setRememberSession] = useState(true);
@@ -74,40 +74,6 @@ export const LoginPage: React.FC<LoginPageProps> = ({
       }
     } catch (err: any) {
       setErrorMessage(err?.message || 'Google sign in failed.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleQuickDemoSeeker = async () => {
-    setIsLoading(true);
-    setErrorMessage('');
-    try {
-      const res = await quickDemoLogin();
-      if (res.success && res.user) {
-        onLoginSuccess(res.user);
-      } else {
-        setErrorMessage(res.error || 'Could not sign in to demo seeker account.');
-      }
-    } catch (err: any) {
-      setErrorMessage(err?.message || 'Demo login failed.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleQuickAdminLogin = async () => {
-    setIsLoading(true);
-    setErrorMessage('');
-    try {
-      const res = await quickAdminLogin();
-      if (res.success && res.user) {
-        onLoginSuccess(res.user);
-      } else {
-        setErrorMessage(res.error || 'Could not sign in to admin account.');
-      }
-    } catch (err: any) {
-      setErrorMessage(err?.message || 'Admin login failed.');
     } finally {
       setIsLoading(false);
     }
@@ -188,29 +154,6 @@ export const LoginPage: React.FC<LoginPageProps> = ({
               </svg>
               <span>Continue with Google</span>
             </Button>
-
-            {/* Instant Fast-Access */}
-            <div className="grid grid-cols-2 gap-2 pt-1">
-              <button
-                type="button"
-                onClick={handleQuickDemoSeeker}
-                disabled={isLoading}
-                className="px-3 py-2 text-xs font-bold rounded-xl border border-indigo-200 dark:border-indigo-800 bg-indigo-50/70 hover:bg-indigo-100 dark:bg-indigo-950/40 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 transition-colors flex items-center justify-center gap-1.5"
-              >
-                <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
-                <span>Demo Seeker</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={handleQuickAdminLogin}
-                disabled={isLoading}
-                className="px-3 py-2 text-xs font-bold rounded-xl border border-amber-300 dark:border-amber-800 bg-amber-50/70 hover:bg-amber-100 dark:bg-amber-950/40 dark:hover:bg-amber-900/60 text-amber-800 dark:text-amber-300 transition-colors flex items-center justify-center gap-1.5"
-              >
-                <ShieldCheck className="w-3.5 h-3.5 text-amber-600" />
-                <span>Admin Login</span>
-              </button>
-            </div>
           </div>
 
           <div className="relative flex items-center justify-center">
@@ -303,33 +246,6 @@ export const LoginPage: React.FC<LoginPageProps> = ({
             >
               {isLoading ? 'Signing In...' : 'Sign In'}
             </Button>
-
-            {/* Quick Fill Credentials Helper */}
-            <div className="pt-2 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-500 space-y-1.5">
-              <span className="font-semibold text-slate-400 block uppercase tracking-wider text-[10px]">Autofill Test Credentials</span>
-              <div className="flex flex-wrap gap-1.5">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEmail('admin@fundecho.org');
-                    setPassword('FundEchoAdmin2026!');
-                  }}
-                  className="px-2 py-1 rounded-md bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800/80 text-amber-700 dark:text-amber-300 hover:bg-amber-100 font-mono text-[10px]"
-                >
-                  Admin: admin@fundecho.org
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEmail('alex.morgan@example.com');
-                    setPassword('FundoraDemo2026!');
-                  }}
-                  className="px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 font-mono text-[10px]"
-                >
-                  Seeker: alex.morgan@example.com
-                </button>
-              </div>
-            </div>
           </form>
 
           {/* Footer Navigation */}

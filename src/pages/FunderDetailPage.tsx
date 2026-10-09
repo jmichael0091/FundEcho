@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { 
   Building2, 
   MapPin, 
@@ -16,7 +16,12 @@ import {
   Layers, 
   ArrowLeft,
   Share2,
-  Check
+  Check,
+  Bell,
+  BellRing,
+  BellOff,
+  Loader2,
+  Send
 } from 'lucide-react';
 import { Opportunity, PageId } from '../types';
 import { FunderProfile } from '../types/funder';
@@ -25,6 +30,13 @@ import { getSiteOrigin } from '../utils/seoUtils';
 import { SEOHead } from '../components/seo/SEOHead';
 import { SEOMetaData } from '../types/seo';
 import { calculateDeadlineStatus } from '../utils/deadlineUtils';
+import { useAuth } from '../context/AuthContext';
+import { 
+  isUserFollowingFunder, 
+  followFunder, 
+  unfollowFunder, 
+  getFunderFollowerCount
+} from '../services/firebase/funderFollowService';
 
 interface FunderDetailPageProps {
   funderSlug: string;
@@ -33,6 +45,10 @@ interface FunderDetailPageProps {
   onNavigate: (page: PageId) => void;
   onSelectOpportunity: (opportunity: Opportunity) => void;
   onToggleBookmark: (opportunity: Opportunity) => void;
+  onSelectCategory?: (categorySlug: string) => void;
+  onSelectCountry?: (countrySlug: string) => void;
+  onSelectFundingType?: (fundingTypeSlug: string) => void;
+  onOpportunityAdded?: (opportunity: Opportunity) => void;
 }
 
 export const FunderDetailPage: React.FC<FunderDetailPageProps> = ({
@@ -42,21 +58,121 @@ export const FunderDetailPage: React.FC<FunderDetailPageProps> = ({
   onNavigate,
   onSelectOpportunity,
   onToggleBookmark,
+  onSelectCategory,
+  onSelectCountry,
+  onSelectFundingType,
+  onOpportunityAdded,
 }) => {
-  const [copiedLink, setCopiedLink] = React.useState(false);
+  const [copiedLink, setCopiedLink] = useState(false);
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [isFollowLoading, setIsFollowLoading] = useState(false);
+  const [followerCount, setFollowerCount] = useState(0);
+  const [statusMessage, setStatusMessage] = useState<{ text: string; type: 'success' | 'info' } | null>(null);
+  const [localAddedOpps, setLocalAddedOpps] = useState<Opportunity[]>([]);
 
+  const { user } = useAuth();
   const funder = useMemo(() => getFunderBySlug(funderSlug), [funderSlug]);
 
-  // Active opportunities matching this funder
+  // Initial follow check & follower count
+  useEffect(() => {
+    if (!funder) return;
+
+    setFollowerCount(getFunderFollowerCount(funder.slug));
+
+    isUserFollowingFunder(user?.id, funder.slug).then((following) => {
+      setIsFollowing(following);
+    });
+
+    const handleFollowEvent = (e: Event) => {
+      const customEvent = e as CustomEvent<{ funderSlug: string; isFollowing: boolean }>;
+      if (customEvent.detail?.funderSlug === funder.slug) {
+        setIsFollowing(customEvent.detail.isFollowing);
+        setFollowerCount(getFunderFollowerCount(funder.slug));
+      }
+    };
+
+    window.addEventListener('fundecho:funder-follow-changed', handleFollowEvent);
+    return () => {
+      window.removeEventListener('fundecho:funder-follow-changed', handleFollowEvent);
+    };
+  }, [funder, user?.id]);
+
+  // Auto-dismiss status toast banner
+  useEffect(() => {
+    if (statusMessage) {
+      const timer = setTimeout(() => setStatusMessage(null), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [statusMessage]);
+
+  const handleToggleFollow = async () => {
+    if (!funder) return;
+    setIsFollowLoading(true);
+
+    try {
+      if (isFollowing) {
+        const res = await unfollowFunder({
+          userId: user?.id,
+          funderSlug: funder.slug,
+        });
+        if (res.success) {
+          setIsFollowing(false);
+          setFollowerCount((prev) => Math.max(0, prev - 1));
+          setStatusMessage({
+            text: `You unfollowed ${funder.name}. You won't receive new opportunity alerts from this funder.`,
+            type: 'info',
+          });
+        }
+      } else {
+        const res = await followFunder({
+          userId: user?.id,
+          userEmail: user?.email,
+          funderSlug: funder.slug,
+          funderName: funder.name,
+        });
+        if (res.success) {
+          setIsFollowing(true);
+          setFollowerCount((prev) => prev + 1);
+          setStatusMessage({
+            text: `You are now following ${funder.name}! You'll be notified via the Notification Center when new opportunities are posted.`,
+            type: 'success',
+          });
+        }
+      }
+    } catch (err) {
+      console.error('Error toggling follow:', err);
+    } finally {
+      setIsFollowLoading(false);
+    }
+  };
+
+  // Active opportunities matching this funder (merging allOpportunities and newly posted ones)
   const hostedOpportunities = useMemo(() => {
     if (!funder) return [];
-    return allOpportunities.filter((opp) => {
+    const combined = [...localAddedOpps, ...allOpportunities];
+    const seen = new Set<string>();
+    const filtered: Opportunity[] = [];
+
+    for (const opp of combined) {
+      if (seen.has(opp.id)) continue;
       const org = opp.organization.toLowerCase();
       const fName = funder.name.toLowerCase();
       const fAcronym = funder.acronym ? funder.acronym.toLowerCase() : '';
-      return org.includes(fName) || fName.includes(org) || (fAcronym && org.includes(fAcronym));
-    });
-  }, [funder, allOpportunities]);
+      const fSlug = funder.slug.toLowerCase();
+
+      if (
+        org.includes(fName) ||
+        fName.includes(org) ||
+        (fAcronym && org.includes(fAcronym)) ||
+        org.includes(fSlug.replace(/-/g, ' '))
+      ) {
+        seen.add(opp.id);
+        filtered.push(opp);
+      }
+    }
+
+    return filtered;
+  }, [funder, allOpportunities, localAddedOpps]);
 
   const origin = getSiteOrigin();
   const canonicalUrl = `${origin}/funders/${funderSlug}`;
@@ -134,6 +250,29 @@ export const FunderDetailPage: React.FC<FunderDetailPageProps> = ({
       {/* Dynamic SEO Meta */}
       <SEOHead metadata={seoMetadata} />
 
+      {/* Follow / Alert Feedback Banner */}
+      {statusMessage && (
+        <div
+          className={`p-3.5 rounded-2xl border text-xs font-semibold flex items-center justify-between gap-3 animate-in fade-in slide-in-from-top-1 duration-200 ${
+            statusMessage.type === 'success'
+              ? 'bg-emerald-50 dark:bg-emerald-950/60 border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200'
+              : 'bg-indigo-50 dark:bg-indigo-950/60 border-indigo-200 dark:border-indigo-800 text-indigo-800 dark:text-indigo-200'
+          }`}
+        >
+          <div className="flex items-center gap-2">
+            <BellRing className="w-4 h-4 text-current shrink-0" />
+            <span>{statusMessage.text}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setStatusMessage(null)}
+            className="text-xs opacity-70 hover:opacity-100 font-bold ml-2 cursor-pointer"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
+
       {/* 1. BREADCRUMB NAVIGATION */}
       <div className="flex items-center justify-between gap-4 flex-wrap pb-3 border-b border-slate-200/80 dark:border-slate-800">
         <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs sm:text-sm text-slate-500 dark:text-slate-400">
@@ -187,6 +326,18 @@ export const FunderDetailPage: React.FC<FunderDetailPageProps> = ({
                 <span className="text-xs font-semibold text-slate-400">
                   Est. {funder.foundedYear}
                 </span>
+                <span className="text-slate-300 dark:text-slate-700">•</span>
+                <div className="flex items-center gap-1.5 text-xs">
+                  <span className="font-semibold text-slate-700 dark:text-slate-300">
+                    {followerCount.toLocaleString()} followers
+                  </span>
+                  {isFollowing && (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                      <BellRing className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
+                      Alerts Active
+                    </span>
+                  )}
+                </div>
               </div>
 
               <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
@@ -212,7 +363,41 @@ export const FunderDetailPage: React.FC<FunderDetailPageProps> = ({
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+            {/* 1. FOLLOW BUTTON */}
+            <button
+              type="button"
+              onClick={handleToggleFollow}
+              disabled={isFollowLoading}
+              className={`inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs transition-all shadow-xs cursor-pointer group active:scale-95 disabled:opacity-60 ${
+                isFollowing
+                  ? 'bg-emerald-50 hover:bg-rose-50 dark:bg-emerald-950/80 dark:hover:bg-rose-950/40 text-emerald-700 hover:text-rose-600 dark:text-emerald-300 dark:hover:text-rose-400 border border-emerald-300 dark:border-emerald-800 hover:border-rose-300'
+                  : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm hover:shadow-indigo-500/25'
+              }`}
+              title={isFollowing ? 'Click to unfollow' : `Follow ${funder.name} to receive opportunity notifications`}
+            >
+              {isFollowLoading ? (
+                <Loader2 className="w-4 h-4 animate-spin text-current" />
+              ) : isFollowing ? (
+                <>
+                  <span className="group-hover:hidden flex items-center gap-1.5">
+                    <Check className="w-4 h-4 text-emerald-500" />
+                    <span>Following</span>
+                  </span>
+                  <span className="hidden group-hover:flex items-center gap-1.5">
+                    <BellOff className="w-4 h-4 text-rose-500" />
+                    <span>Unfollow</span>
+                  </span>
+                </>
+              ) : (
+                <>
+                  <Bell className="w-4 h-4" />
+                  <span>Follow Funder</span>
+                </>
+              )}
+            </button>
+
+            {/* 2. VISIT OFFICIAL PORTAL */}
             <a
               href={funder.website}
               target="_blank"
@@ -445,6 +630,54 @@ export const FunderDetailPage: React.FC<FunderDetailPageProps> = ({
 
         {/* RIGHT 1 COLUMN: APPLICATION GUIDANCE & REGIONAL SCOPE */}
         <div className="space-y-6">
+          {/* Funder Alerts & Follower Updates Card */}
+          <div className="bg-gradient-to-br from-indigo-50/80 to-purple-50/40 dark:from-indigo-950/30 dark:to-purple-950/20 rounded-3xl border border-indigo-200/80 dark:border-indigo-800/50 p-6 space-y-4 shadow-2xs">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <div className="p-2 rounded-xl bg-indigo-600 text-white shadow-2xs">
+                  <BellRing className="w-4 h-4" />
+                </div>
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                  Opportunity Alerts
+                </h3>
+              </div>
+              <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300">
+                {followerCount.toLocaleString()} Following
+              </span>
+            </div>
+
+            <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+              Never miss an opening. When you follow <span className="font-semibold text-slate-900 dark:text-white">{funder.name}</span>, you receive instant in-app alerts directly in your Notification Center whenever new funding calls, grants, or scholarships are published.
+            </p>
+
+            <div className="pt-1 space-y-2.5">
+              <button
+                type="button"
+                onClick={handleToggleFollow}
+                disabled={isFollowLoading}
+                className={`w-full py-2.5 px-4 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                  isFollowing
+                    ? 'bg-white dark:bg-slate-800 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-emerald-700 hover:text-rose-600 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700'
+                    : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs'
+                }`}
+              >
+                {isFollowLoading ? (
+                  <Loader2 className="w-4 h-4 animate-spin text-current" />
+                ) : isFollowing ? (
+                  <>
+                    <Check className="w-4 h-4 text-emerald-500" />
+                    <span>Following {funder.acronym || funder.name.split(' ')[0]} (Alerts On)</span>
+                  </>
+                ) : (
+                  <>
+                    <Bell className="w-4 h-4" />
+                    <span>Follow for New Calls</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+
           {/* Reviewer Advice Card */}
           <div className="bg-amber-50/70 dark:bg-amber-950/30 rounded-3xl border border-amber-200/80 dark:border-amber-900/40 p-6 space-y-4">
             <div className="flex items-center gap-2">

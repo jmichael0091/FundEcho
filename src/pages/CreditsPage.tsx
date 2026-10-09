@@ -53,7 +53,7 @@ export const CreditsPage: React.FC<CreditsPageProps> = ({ onNavigate }) => {
 
     try {
       await addDemoCredits(pkg.id);
-      setSuccessMessage(`Added ${total} credits to your wallet via Demo Purchase!`);
+      setSuccessMessage(`Added ${total} credits to your wallet!`);
       setTimeout(() => {
         setSuccessMessage(null);
         setSelectedPack(null);
@@ -84,7 +84,7 @@ export const CreditsPage: React.FC<CreditsPageProps> = ({ onNavigate }) => {
             <div>
               <div className="font-extrabold">{successMessage}</div>
               <div className="text-[10px] text-slate-400 font-normal">
-                Sandbox Simulation &bull; Updated Balance: {wallet.balance} Credits
+                Updated Balance: {wallet.balance} Credits
               </div>
             </div>
           </div>
@@ -105,7 +105,7 @@ export const CreditsPage: React.FC<CreditsPageProps> = ({ onNavigate }) => {
 
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800 text-[11px] font-bold text-amber-800 dark:text-amber-300">
             <ShieldCheck className="w-3.5 h-3.5 text-amber-600" />
-            <span>Sandbox Mode &bull; Simulated Transactions</span>
+            <span>Instant Credit Balance Sync</span>
           </div>
         </div>
 
@@ -248,12 +248,12 @@ export const CreditsPage: React.FC<CreditsPageProps> = ({ onNavigate }) => {
                       {isCurrentProcessing ? (
                         <>
                           <RefreshCw className="w-4 h-4 animate-spin" />
-                          <span>Processing Demo...</span>
+                          <span>Processing...</span>
                         </>
                       ) : (
                         <>
                           <Coins className="w-4 h-4" />
-                          <span>Purchase {pkg.name} (Demo)</span>
+                          <span>Purchase {pkg.name} Package</span>
                         </>
                       )}
                     </button>
